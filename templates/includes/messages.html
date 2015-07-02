@@ -1,16 +1,25 @@
 {% load sekizai_tags %}
 
+{% if messages %}
+<div class="messages-block block active">
+    {% for message in messages %}
+    <div class="message-block block {{ message.tags }}">{{text}}</div>
+    {% endfor %}
+    <a class="remove-thumb thumb" href="#remove">remove</a>
+</div>
+{% endif %}
 {% verbatim %}
 <div class="messages-wrap wrap {{ready|yesno:'active'}}" data-ctrl="messages">
-	<div class="message-block block {{type}}" data-scope="{{.}}" data-ctrl="message">
-		{{text}}
-		<a class="delete-thumb thumb" href="#remove">remove</a>
+	<div class="message-block block {{{type}}} {{active|yesno:'active'}}" data-scope="{{.}}" data-ctrl="message">
+		<div class="text-block block">{{{text}}}</div>
+		<a class="remove-thumb thumb" href="#remove">remove</a>
 	</div>
 </div>
 {% endverbatim %}
 
-{% addtoblock "css" %}<link href="{{STATIC_URL}}css/messages-app.css" rel="stylesheet" />{% endaddtoblock %}
-{% addtoblock "js" %}<script src="{{STATIC_URL}}js/messages-app.js"></script>{% endaddtoblock %}
+{% addtoblock "css" %}<link href="{{STATIC_URL}}css/messages.classes.css" rel="stylesheet" />{% endaddtoblock %}
+{% addtoblock "js" %}<script src="{{STATIC_URL}}js/messages.js"></script>{% endaddtoblock %}
+
 {% if messages %}
 {% addtoblock "js" %}<script>
 	window.messages.add({% for message in messages %}{

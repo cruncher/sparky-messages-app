@@ -54,6 +54,13 @@
 		599: { text: "Network connect timeout error (599)" }
 	};
 
+	function delayRemove(message) {
+		message.active = false;
+		setTimeout(function() {
+			messages.remove(message);
+		}, 600);
+	}
+
 	// Redefine add methods to accept status numbers in the message table.
 	['add', 'push']
 	.forEach(function(method) {
@@ -68,6 +75,16 @@
 		};
 	});
 
+	messages.on('add', function(messages, message) {
+		message.active = true;
+
+		if (message.duration) {
+			setTimeout(function() {
+				delayRemove(message);
+			}, message.duration);
+		}
+	});
+
 	Sparky.ctrl['messages'] = function(node) {
 		this.on('ready', function() {
 			messages.ready = true;
@@ -76,11 +93,15 @@
 		return messages;
 	};
 
-	Sparky.ctrl['message'] = function(node, model) {
+	Sparky.ctrl['message'] = function(node, message) {
 		jQuery(node)
 		.on('click', '[href="#remove"]', function(e) {
-			messages.remove(model);
+			delayRemove(message);
 			e.preventDefault();
 		});
 	};
+})(window, window.Sparky);
+
+	
+	
 })(Sparky);
