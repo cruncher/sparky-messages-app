@@ -1,8 +1,9 @@
 // App namespace
 
-(function(Sparky) {
+(function(window) {
 	"use strict";
 
+	var Sparky = window.Sparky;
 	var messages = window.messages = Sparky.Collection();
 
 	var table = messages.table = {
@@ -100,8 +101,4 @@
 			e.preventDefault();
 		});
 	};
-})(window, window.Sparky);
-
-	
-	
-})(Sparky);
+})(window);
