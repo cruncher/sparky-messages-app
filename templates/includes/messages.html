@@ -1,0 +1,20 @@
+{% load sekizai_tags %}
+
+{% verbatim %}
+<div class="messages-wrap wrap {{ready|yesno:'active'}}" data-ctrl="messages">
+	<div class="message-block block {{type}}" data-scope="{{.}}" data-ctrl="message">
+		{{text}}
+		<a class="delete-thumb thumb" href="#remove">remove</a>
+	</div>
+</div>
+{% endverbatim %}
+
+{% addtoblock "css" %}<link href="{{STATIC_URL}}css/messages-app.css" rel="stylesheet" />{% endaddtoblock %}
+{% addtoblock "js" %}<script src="{{STATIC_URL}}js/messages-app.js"></script>{% endaddtoblock %}
+{% if messages %}
+{% addtoblock "js" %}<script>
+	window.messages.add({% for message in messages %}{
+		text: "{{message|safe}}"
+	}{% if forloop.last %}{% else %},{% endif %}{% endfor %});
+</script>{% endaddtoblock %}
+{% endif %}
