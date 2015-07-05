@@ -10,14 +10,14 @@
 {% endif %}
 {% verbatim %}
 <div class="messages-wrap wrap {{ready|yesno:'active'}}" data-ctrl="messages">
-	<div class="message-block block {{{type}}} {{active|yesno:'active'}}" data-scope="{{.}}" data-ctrl="message">
-		<div class="text-block block">{{{text}}}</div>
+	<div class="message-block block {{{type}}}-message-block {{active|yesno:'active'}}" data-scope="{{.}}" data-ctrl="message">
+		<div class="message-text-block block">{{{text}}}</div>
 		<a class="remove-thumb thumb" href="#remove">remove</a>
 	</div>
 </div>
 {% endverbatim %}
 
-{% addtoblock "css" %}<link href="{{STATIC_URL}}css/messages.classes.css" rel="stylesheet" />{% endaddtoblock %}
+{% addtoblock "css" %}<link href="{{STATIC_URL}}css/messages.css" rel="stylesheet" />{% endaddtoblock %}
 {% addtoblock "js" %}<script src="{{STATIC_URL}}js/messages.js"></script>{% endaddtoblock %}
 
 {% if messages %}
