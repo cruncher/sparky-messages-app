@@ -96,9 +96,30 @@
 
 	Sparky.ctrl['message'] = function(node, message) {
 		jQuery(node)
-		.on('click', '[href="#remove"]', function(e) {
-			delayRemove(message);
-			e.preventDefault();
+		.on('click', 'a', function(e) {
+			var hash = e.currentTarget.hash;
+			var n;
+
+			if (hash === '#remove') {
+				e.preventDefault();
+				delayRemove(message);
+				return;
+			}
+
+			if (message.actions) {
+				n = message.actions.length;
+				
+				while (n--) {
+					if (hash === message.actions[n].href) {
+						e.preventDefault();
+						message.actions[n].fn();
+						delayRemove(message);
+						return;
+					}
+				}
+			}
 		});
+
+		
 	};
 })(window);

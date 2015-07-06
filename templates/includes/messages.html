@@ -13,6 +13,11 @@
 	<div class="message-block block {{{type}}}-message-block {{active|yesno:'active'}}" data-scope="{{.}}" data-ctrl="message">
 		<div class="message-text-block block">{{{text}}}</div>
 		<a class="remove-thumb thumb" href="#remove">remove</a>
+		<ul class="action-index index">
+			<li data-scope="{{{actions}}}">
+				<a class="action-button button" href="{{{href}}}">{{{text}}}</a>
+			</li>
+		</ul>
 	</div>
 </div>
 {% endverbatim %}
