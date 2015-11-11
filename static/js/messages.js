@@ -4,7 +4,7 @@
 	"use strict";
 
 	var Sparky = window.Sparky;
-	var messages = window.messages = Sparky.Collection();
+	var messages = window.messages = Collection();
 
 	var table = messages.table = {
 		400: { text: 'Oooops. Bad request (400)' },
