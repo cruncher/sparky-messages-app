@@ -5,10 +5,14 @@
 
 	var assign     = Object.assign;
 	var Fn         = window.Fn;
-	var Stream     = window.Stream;
+	var dom        = window.dom;
+	var Observable = window.Observable;
 	var Sparky     = window.Sparky;
-	var Collection = window.Collection;
-	var messages   = window.messages = Collection();
+
+	var noop       = Fn.noop;
+	var remove     = Fn.remove;
+	var observe    = Observable.observe;
+	var messages   = window.messages = Observable([]);
 
 	var table = messages.table = {
 		400: { status: 400, text: 'Oooops. Bad request' },
@@ -62,65 +66,33 @@
 	function delayRemove(message) {
 		message.active = false;
 		setTimeout(function() {
-			messages.remove(message);
+			remove(messages, message);
 		}, 600);
 	}
 
-	// Redefine add methods to accept status numbers in the message table.
-	['add', 'push']
-	.forEach(function(method) {
-		var m = messages[method];
-		messages[method] = function(object) {
-			if (typeof object === 'number' && !table[object]) {
-				throw new Error('Messages: I don\'t have an error object for status ' + object + '. Please add one to messages.table')
-			}
+	observe(messages, '', function(messages, changes) {
+		changes.added.forEach(function(message) {
+			message.active = true;
 
-			object = typeof object === 'number' ? table[object] : object ;
-			return m.call(messages, object);
-		};
-	});
-
-	messages.on('add', function(messages, message) {
-		message.active = true;
-
-		if (message.duration) {
-			setTimeout(function() {
-				delayRemove(message);
-			}, message.duration * 1000);
-		}
-	});
-
-	Sparky.fn.messages = function(node) {
-		assign(this.fn, {
-			"if-status": function(node, scopes) {
-				var placeholder = dom.create('comment', 'status placeholder');
-				var stream = Stream.of()
-					.dedup()
-					.each(function(status) {
-						status ?
-							dom.replace(placeholder, node) :
-							dom.replace(node, placeholder) ;
-					});
-
-				scopes.tap(function(message) {
-					stream.push(!!message.status || false);
-				});
-
-				dom.replace(node, placeholder);
-			},
-
-			"remove-on-click": function(node, scopes) {
-				scopes.tap(function(message) {
-					jQuery(node)
-					.on('click', function(e) {
-						e.preventDefault();
-						delayRemove(message);
-						return;
-					});
-				});
+			if (message.duration) {
+				setTimeout(function() {
+					delayRemove(message);
+				}, message.duration);
 			}
 		});
+	});
 
-		return Fn.of(messages);
+	Sparky.fn["remove-on-click"] = function(node, scopestream) {
+		scopestream.tap(function(message) {
+			dom
+			.event('click', node)
+			.each(function(e) {
+				e.preventDefault();
+				delayRemove(message);
+				return;
+			});
+		});
 	};
+
+	Sparky('#messages', messages);
 })(this);
