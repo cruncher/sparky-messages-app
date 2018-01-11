@@ -1,34 +1,42 @@
 {% load sekizai_tags %}
 
-{% if messages %}
-<div class="messages-block block active">
-    {% for message in messages %}
-    <div class="message-block block {{ message.tags }}">{{text}}</div>
-    {% endfor %}
-    <a class="remove-thumb thumb" href="#remove">remove</a>
-</div>
-{% endif %}
-{% verbatim %}
-<div class="messages-wrap wrap {{ready|yesno:'active'}}" data-ctrl="messages">
-	<div class="message-block block {{{type}}}-message-block {{active|yesno:'active'}}" data-scope="{{.}}" data-ctrl="message">
-		<div class="message-text-block block">{{{text}}}</div>
-		<a class="remove-thumb thumb" href="#remove">remove</a>
-		<ul class="action-index index">
-			<li data-scope="{{{actions}}}">
-				<a class="action-button button" href="{{{href}}}">{{{text}}}</a>
-			</li>
-		</ul>
-	</div>
-</div>
-{% endverbatim %}
+<div class="messages-block block" data-fn="messages" data-template="messages-template" id="messages"></div>
+
+{% addtoblock "template" %}
+<template id="messages-template">
+    <div class="{[type]}{[type|yesno:'-message-block']} message-block block {[active|yesno:'active']}" data-fn="each">
+        <p class="message-text-block block">
+            {[text]}<br/>
+            <span data-fn="if-status" class="text-6">({[status]})</span>
+        </p>
+
+        <button class="{[type|is:'success'|not|yesno:'','hidden']} message-close-thumb close-thumb thumb" data-fn="remove-on-click">remove</button>
+
+        {% comment %}
+        <ul class="action-index index" data-scope="{[actions]}">
+            <li data-fn="each">
+                <a class="action-button button" href="{[href]}">{[text]}</a>
+            </li>
+        </ul>
+        {% endcomment %}
+    </div>
+</template>
+{% endaddtoblock %}
 
 {% addtoblock "css" %}<link href="{{STATIC_URL}}css/messages.css" rel="stylesheet" />{% endaddtoblock %}
 {% addtoblock "js" %}<script src="{{STATIC_URL}}js/messages.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script title="messages ready">
+(function(window) {
+	"use strict";
 
-{% if messages %}
-{% addtoblock "js" %}<script>
-	window.messages.add({% for message in messages %}{
-		text: "{{message|safe}}"
-	}{% if forloop.last %}{% else %},{% endif %}{% endfor %});
+	var Sparky   = window.Sparky;
+	var messages = window.messages;
+
+    {% if messages %}messages.add({% for message in messages %}{
+		text: "{{message|safe}}",
+        type: "{{message.level_tag}}"
+	}{% if forloop.last %}{% else %},{% endif %}{% endfor %});{% endif %}
+
+    Sparky('#messages');
+})(this);
 </script>{% endaddtoblock %}
-{% endif %}
