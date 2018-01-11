@@ -3,15 +3,14 @@
 (function(window) {
 	"use strict";
 
-	var assign     = Object.assign;
 	var Fn         = window.Fn;
 	var dom        = window.dom;
 	var Observable = window.Observable;
 	var Sparky     = window.Sparky;
 
-	var noop       = Fn.noop;
 	var remove     = Fn.remove;
 	var observe    = Observable.observe;
+
 	var messages   = window.messages = Observable([]);
 
 	var table = messages.table = {
