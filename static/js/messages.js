@@ -98,10 +98,19 @@
 		});
 	};
 
+	function isError(object) {
+		// Detect error-like object by duck typing
+		return object
+		&& typeof object.stack === 'string'
+		&& typeof object.message === 'string' ;
+	}
+
 	// Export
 
 	window.messages = Stream
 	.of()
+	// Todo: Dedup will cause problems if, eg. sending a string twice. It
+	// should only be applied to error objects really.
 	.dedup()
 	.map(overload(toType, {
 		string: function(string) {
@@ -118,29 +127,25 @@
 			};
 		},
 
-		default: id
+		object: function(object) {
+			return isError(object) ?
+				object.response && object.response.status ?
+					table[object.response.status] :
+				{
+					type:   'error',
+					text:   object.message,
+					error:  object
+				} :
+			object ;
+		},
+
+		default: function(value) {
+			throw new Error('messages: .push() accepts a string, number or object; you gave it ' + (typeof value));
+		}
 	}))
 	.each(function(message) {
 		messages.push(message);
 	});
-
-	window.messages.pushError = Stream
-	.of()
-	.dedup()
-	.map(function(error) {
-		return error.response && error.response.status ?
-			table[error.response.status] :
-			{
-				type:   'error',
-				text:   error.message,
-				status: error.response && error.response.status,
-				error:  error
-			} ;
-	})
-	.each(function(message) {
-		messages.push(message);
-	})
-	.push;
 
 	Sparky('#messages', messages);
 
