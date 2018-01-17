@@ -9,12 +9,14 @@
 	var Observable = window.Observable;
 	var Sparky     = window.Sparky;
 
+	var id         = Fn.id;
+	var overload   = Fn.overload;
 	var remove     = Fn.remove;
+	var toType     = Fn.toType;
 	var observe    = Observable.observe;
 
-	var messages   = window.messages = Observable([]);
-
-	var table = messages.table = {
+	var messages   = Observable([]);
+	var table = {
 		400: { status: 400, type: "error", text: 'Bad request' },
 		401: { status: 401, type: "error", text: "You don't have permission to do that." },
 		402: { status: 402, type: "error", text: "Payment Required" },
@@ -82,6 +84,8 @@
 		});
 	});
 
+	// Sparky
+
 	Sparky.fn["remove-on-click"] = function(node, scopestream) {
 		scopestream.tap(function(message) {
 			dom
@@ -94,9 +98,33 @@
 		});
 	};
 
-	Sparky('#messages', messages);
+	// Export
 
-	messages.pushError = Stream
+	window.messages = Stream
+	.of()
+	.dedup()
+	.map(overload(toType, {
+		string: function(string) {
+			return table[string] || {
+				type: 'info',
+				text: string
+			};
+		},
+
+		number: function(number) {
+			return table[number] || {
+				type:   'info',
+				status: number
+			};
+		},
+
+		default: id
+	}))
+	.each(function(message) {
+		messages.push(message);
+	});
+
+	window.messages.pushError = Stream
 	.of()
 	.dedup()
 	.map(function(error) {
@@ -113,5 +141,9 @@
 		messages.push(message);
 	})
 	.push;
+
+	Sparky('#messages', messages);
+
+	window.messages.table = table;
 
 })(this);
