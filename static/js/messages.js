@@ -89,7 +89,7 @@
 	Sparky.fn["remove-on-click"] = function(node, scopestream) {
 		scopestream.tap(function(message) {
 			dom
-			.event('click', node)
+			.events('click', node)
 			.each(function(e) {
 				e.preventDefault();
 				delayRemove(message);
