@@ -6,7 +6,7 @@
 <template id="messages-template">
     <div class="{[type]}{[type|yesno:'-message-block']} message-block block {[active|yesno:'active','']}" removeable sparky-fn="each">
         <p class="message-text-block block">
-            {[text]}<br/>
+            {[message]}<br/>
             <span data-fn="if-status" class="text-6">({[status]})</span>
         </p>
 
@@ -33,8 +33,8 @@
 	var messages = window.messages;
 
     {% if messages %}messages.push({% for message in messages %}{
-		text: "{{message|safe}}",
-        type: "{{message.level_tag}}"
+		message: "{{message|safe}}",
+        type:    "{{message.level_tag}}"
 	}{% if forloop.last %}{% else %},{% endif %}{% endfor %});{% endif %}
 })(this);
 </script>{% endaddtoblock %}
