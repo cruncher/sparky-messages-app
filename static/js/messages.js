@@ -143,7 +143,6 @@
 		}
 	}))
 	.each(function(message) {
-debugger
 		messages.push(message);
 	});
 
