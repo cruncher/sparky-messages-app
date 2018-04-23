@@ -146,7 +146,10 @@
 		messages.push(message);
 	});
 
-	Sparky('#messages', messages);
+	Sparky.fn.messages = function() {
+console.log('MESSAGES');
+		return Fn.of(messages);
+	};
 
 	window.messages.table = table;
 

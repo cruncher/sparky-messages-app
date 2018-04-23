@@ -1,6 +1,6 @@
 {% load sekizai_tags %}
 
-<div class="messages-block block" sparky-fn="template:'#messages-template'" id="messages"></div>
+<div class="messages-block block" sparky-fn="messages template:'#messages-template'" id="messages"></div>
 
 {% addtoblock "templates" %}
 <template id="messages-template">
@@ -29,12 +29,20 @@
 (function(window) {
 	"use strict";
 
-	var Sparky   = window.Sparky;
 	var messages = window.messages;
 
     {% if messages %}messages.push({% for message in messages %}{
 		message: "{{message|safe}}",
         type:    "{{message.level_tag}}"
 	}{% if forloop.last %}{% else %},{% endif %}{% endfor %});{% endif %}
+})(this);
+</script>{% endaddtoblock %}
+
+{% addtoblock "js" %}<script title="messages">
+(function(window) {
+	"use strict";
+
+	var Sparky   = window.Sparky;
+    Sparky('#messages');
 })(this);
 </script>{% endaddtoblock %}
